@@ -242,6 +242,17 @@
             transform: translateY(-2px);
         }
         
+        .loading {
+            display: none;
+            background: #1a4f72;
+            color: white;
+        }
+        
+        .loading:hover {
+            background: #1a4f72;
+            transform: none;
+        }
+        
         footer {
             text-align: center;
             margin-top: 30px;
@@ -349,6 +360,9 @@
                 
                 <div class="buttons">
                     <button class="btn btn-primary" id="gerar-pdf">📥 Baixar PDF em Paisagem</button>
+                    <button class="btn loading" id="loading-pdf" disabled>
+                        ⏳ Gerando PDF...
+                    </button>
                 </div>
             </div>
         </div>
@@ -373,6 +387,7 @@
                 preview: document.getElementById('convite-preview'),
                 atualizar: document.getElementById('atualizar'),
                 gerarPdf: document.getElementById('gerar-pdf'),
+                loadingPdf: document.getElementById('loading-pdf'),
                 limpar: document.getElementById('limpar')
             };
 
@@ -451,154 +466,173 @@
                 console.log('Visualização atualizada!');
             }
 
+            // Mostrar/ocultar loading
+            function toggleLoading(show) {
+                if (show) {
+                    elements.gerarPdf.style.display = 'none';
+                    elements.loadingPdf.style.display = 'block';
+                } else {
+                    elements.gerarPdf.style.display = 'block';
+                    elements.loadingPdf.style.display = 'none';
+                }
+            }
+
             // Gerar PDF em paisagem (tamanho real A4)
-            function gerarPDF() {
-                console.log('Gerando PDF...');
+            async function gerarPDF() {
+                console.log('Iniciando geração do PDF...');
                 
-                // Verificar se as bibliotecas estão carregadas
-                if (typeof jsPDF === 'undefined') {
-                    alert('Erro: Biblioteca jsPDF não carregada. Tente recarregar a página.');
-                    return;
-                }
+                // Mostrar loading
+                toggleLoading(true);
                 
-                if (typeof html2canvas === 'undefined') {
-                    alert('Erro: Biblioteca html2canvas não carregada. Tente recarregar a página.');
-                    return;
-                }
-
-                const { jsPDF } = window.jspdf;
-                
-                // Criar elemento temporário para o PDF em tamanho real
-                const tempContainer = document.createElement('div');
-                tempContainer.style.width = '297mm';
-                tempContainer.style.height = '210mm';
-                tempContainer.style.display = 'flex';
-                tempContainer.style.justifyContent = 'center';
-                tempContainer.style.alignItems = 'center';
-                tempContainer.style.background = 'white';
-                tempContainer.style.padding = '40px';
-                tempContainer.style.position = 'fixed';
-                tempContainer.style.left = '-9999px';
-                tempContainer.style.top = '0';
-                tempContainer.style.zIndex = '-1000';
-                
-                const pdfContent = document.createElement('div');
-                pdfContent.style.width = '100%';
-                pdfContent.style.height = '100%';
-                pdfContent.style.fontFamily = "'Playfair Display', serif";
-                pdfContent.style.textAlign = 'center';
-                pdfContent.style.lineHeight = '2.0';
-                pdfContent.style.padding = '50px';
-                pdfContent.style.display = 'flex';
-                pdfContent.style.flexDirection = 'column';
-                pdfContent.style.justifyContent = 'center';
-                
-                // Conteúdo em tamanho real para o PDF
-                const dados = {
-                    nome: elements.nome.value || '[NOME]',
-                    chamado: elements.chamado.value || '[CHAMADO]',
-                    data: formatarData(elements.data.value),
-                    tema: elements.tema.value || '[TEMA DO DISCURSO]',
-                    ordem: elements.ordem.value
-                };
-
-                pdfContent.innerHTML = `
-                    <div style="font-size: 32px; color: #1a4f72; margin-bottom: 30px; border-bottom: 3px solid #8B4513; padding-bottom: 15px;">
-                        Convite para Discursar na Reunião Sacramental
-                    </div>
-                    
-                    <div style="font-size: 20px; color: #2c6b9c; margin-bottom: 25px;">
-                        A Igreja de Jesus Cristo dos Santos dos Últimos Dias
-                    </div>
-                    <div style="font-size: 20px; color: #2c6b9c; margin-bottom: 40px;">
-                        Ala Aerolândia – Estaca Fortaleza Brasil
-                    </div>
-                    
-                    <p style="font-size: 18px; margin-bottom: 20px; text-align: center; line-height: 1.8;">
-                        Prezado(a) irmão(ã) <strong style="color: #1a4f72;">${dados.nome}</strong>, 
-                        no digno chamado de <strong style="color: #1a4f72;">${dados.chamado}</strong>,
-                    </p>
-                    
-                    <p style="font-size: 18px; margin-bottom: 20px; text-align: center; line-height: 1.8;">
-                        Você está cordialmente convidado(a) para discursar como 
-                        <strong style="color: #1a4f72;">${dados.ordem} Orador(a)</strong> 
-                        na Reunião Sacramental do dia 
-                        <strong style="color: #1a4f72;">${dados.data}</strong>.
-                    </p>
-                    
-                    <p style="font-size: 18px; margin-bottom: 20px; text-align: center; line-height: 1.8;">
-                        Esta é uma valiosa oportunidade para edificar a fé e fortalecer 
-                        os membros de nossa ala através de seu testemunho e experiências.
-                    </p>
-                    
-                    <div style="font-size: 22px; margin: 30px 0; padding: 20px; background: #f8f9fa; border: 2px solid #8B4513; border-radius: 8px;">
-                        <strong>TEMA DO DISCURSO:</strong><br>
-                        "<span style="color: #8B4513; font-size: 24px;">${dados.tema}</span>"
-                    </div>
-                    
-                    <p style="font-size: 18px; margin-bottom: 20px; text-align: center; line-height: 1.8;">
-                        Recomendamos o uso de escrituras sagradas para fundamentar sua mensagem 
-                        e inspirar os ouvintes.
-                    </p>
-                    
-                    <p style="font-size: 18px; margin-bottom: 20px; text-align: center; line-height: 1.8;">
-                        Agradecemos antecipadamente por aceitar esta designação e oramos para 
-                        que o Senhor o(a) abençoe ricamente em sua preparação e apresentação.
-                    </p>
-                    
-                    <div style="margin-top: 40px; font-style: italic; color: #666; font-size: 18px;">
-                        <p>Com estima,</p>
-                        <p><strong>Bispado da Ala Aerolândia</strong></p>
-                        <p>Estaca Fortaleza Brasil</p>
-                    </div>
-                    
-                    <p style="text-align: center; margin-top: 30px; font-size: 16px; color: #666;">
-                        Caso haja algum impedimento, solicitamos que nos avise com antecedência.
-                    </p>
-                `;
-                
-                tempContainer.appendChild(pdfContent);
-                document.body.appendChild(tempContainer);
-                
-                // Gerar PDF com tratamento de erro
                 try {
-                    html2canvas(tempContainer, {
+                    // Verificar se as bibliotecas estão carregadas
+                    if (typeof window.jspdf === 'undefined') {
+                        throw new Error('Biblioteca jsPDF não carregada');
+                    }
+                    
+                    if (typeof html2canvas === 'undefined') {
+                        throw new Error('Biblioteca html2canvas não carregada');
+                    }
+
+                    const { jsPDF } = window.jspdf;
+                    
+                    // Criar elemento temporário para o PDF em tamanho real
+                    const tempContainer = document.createElement('div');
+                    tempContainer.style.width = '297mm';
+                    tempContainer.style.height = '210mm';
+                    tempContainer.style.display = 'flex';
+                    tempContainer.style.justifyContent = 'center';
+                    tempContainer.style.alignItems = 'center';
+                    tempContainer.style.background = 'white';
+                    tempContainer.style.padding = '40px';
+                    tempContainer.style.position = 'fixed';
+                    tempContainer.style.left = '-9999px';
+                    tempContainer.style.top = '0';
+                    tempContainer.style.zIndex = '-1000';
+                    
+                    const pdfContent = document.createElement('div');
+                    pdfContent.style.width = '100%';
+                    pdfContent.style.height = '100%';
+                    pdfContent.style.fontFamily = "'Playfair Display', serif";
+                    pdfContent.style.textAlign = 'center';
+                    pdfContent.style.lineHeight = '1.8';
+                    pdfContent.style.padding = '40px';
+                    pdfContent.style.display = 'flex';
+                    pdfContent.style.flexDirection = 'column';
+                    pdfContent.style.justifyContent = 'center';
+                    
+                    // Conteúdo em tamanho real para o PDF
+                    const dados = {
+                        nome: elements.nome.value || '[NOME]',
+                        chamado: elements.chamado.value || '[CHAMADO]',
+                        data: formatarData(elements.data.value),
+                        tema: elements.tema.value || '[TEMA DO DISCURSO]',
+                        ordem: elements.ordem.value
+                    };
+
+                    pdfContent.innerHTML = `
+                        <div style="font-size: 28px; color: #1a4f72; margin-bottom: 25px; border-bottom: 2px solid #8B4513; padding-bottom: 10px;">
+                            Convite para Discursar na Reunião Sacramental
+                        </div>
+                        
+                        <div style="font-size: 18px; color: #2c6b9c; margin-bottom: 20px;">
+                            A Igreja de Jesus Cristo dos Santos dos Últimos Dias
+                        </div>
+                        <div style="font-size: 18px; color: #2c6b9c; margin-bottom: 30px;">
+                            Ala Aerolândia – Estaca Fortaleza Brasil
+                        </div>
+                        
+                        <p style="font-size: 16px; margin-bottom: 15px; text-align: center; line-height: 1.6;">
+                            Prezado(a) irmão(ã) <strong style="color: #1a4f72;">${dados.nome}</strong>, 
+                            no digno chamado de <strong style="color: #1a4f72;">${dados.chamado}</strong>,
+                        </p>
+                        
+                        <p style="font-size: 16px; margin-bottom: 15px; text-align: center; line-height: 1.6;">
+                            Você está cordialmente convidado(a) para discursar como 
+                            <strong style="color: #1a4f72;">${dados.ordem} Orador(a)</strong> 
+                            na Reunião Sacramental do dia 
+                            <strong style="color: #1a4f72;">${dados.data}</strong>.
+                        </p>
+                        
+                        <p style="font-size: 16px; margin-bottom: 15px; text-align: center; line-height: 1.6;">
+                            Esta é uma valiosa oportunidade para edificar a fé e fortalecer 
+                            os membros de nossa ala através de seu testemunho e experiências.
+                        </p>
+                        
+                        <div style="font-size: 18px; margin: 25px 0; padding: 15px; background: #f8f9fa; border: 2px solid #8B4513; border-radius: 5px;">
+                            <strong>TEMA DO DISCURSO:</strong><br>
+                            "<span style="color: #8B4513; font-size: 20px;">${dados.tema}</span>"
+                        </div>
+                        
+                        <p style="font-size: 16px; margin-bottom: 15px; text-align: center; line-height: 1.6;">
+                            Recomendamos o uso de escrituras sagradas para fundamentar sua mensagem 
+                            e inspirar os ouvintes.
+                        </p>
+                        
+                        <p style="font-size: 16px; margin-bottom: 15px; text-align: center; line-height: 1.6;">
+                            Agradecemos antecipadamente por aceitar esta designação e oramos para 
+                            que o Senhor o(a) abençoe ricamente em sua preparação e apresentação.
+                        </p>
+                        
+                        <div style="margin-top: 30px; font-style: italic; color: #666; font-size: 16px;">
+                            <p>Com estima,</p>
+                            <p><strong>Bispado da Ala Aerolândia</strong></p>
+                            <p>Estaca Fortaleza Brasil</p>
+                        </div>
+                        
+                        <p style="text-align: center; margin-top: 20px; font-size: 14px; color: #666;">
+                            Caso haja algum impedimento, solicitamos que nos avise com antecedência.
+                        </p>
+                    `;
+                    
+                    tempContainer.appendChild(pdfContent);
+                    document.body.appendChild(tempContainer);
+
+                    // Aguardar um pouco para garantir que o elemento foi renderizado
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    // Gerar PDF
+                    const canvas = await html2canvas(tempContainer, {
                         scale: 2,
                         useCORS: true,
-                        logging: true,
+                        logging: false,
                         width: tempContainer.offsetWidth,
-                        height: tempContainer.offsetHeight
-                    }).then(canvas => {
-                        const imgData = canvas.toDataURL('image/png', 1.0);
-                        const pdf = new jsPDF('l', 'mm', 'a4');
-                        const pageWidth = pdf.internal.pageSize.getWidth();
-                        const pageHeight = pdf.internal.pageSize.getHeight();
-                        
-                        const imgWidth = pageWidth - 40;
-                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                        const x = 20;
-                        const y = (pageHeight - imgHeight) / 2;
-                        
-                        pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
-                        
-                        // Remover elemento temporário
-                        document.body.removeChild(tempContainer);
-                        
-                        const fileName = elements.nome.value ? 
-                            `Convite_${elements.nome.value.replace(/\s+/g, '_')}.pdf` : 
-                            'Convite_Discurso_Sacramental.pdf';
-                        
-                        pdf.save(fileName);
-                        console.log('PDF gerado com sucesso!');
-                    }).catch(error => {
-                        console.error('Erro ao gerar canvas:', error);
-                        alert('Erro ao gerar PDF. Tente novamente.');
-                        document.body.removeChild(tempContainer);
+                        height: tempContainer.offsetHeight,
+                        backgroundColor: '#ffffff'
                     });
-                } catch (error) {
-                    console.error('Erro no processo de geração do PDF:', error);
-                    alert('Erro ao gerar PDF. Verifique o console para detalhes.');
+
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF('l', 'mm', 'a4');
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
+                    
+                    // Calcular dimensões para caber na página
+                    const imgWidth = pageWidth - 20; // Margens menores
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    
+                    // Centralizar verticalmente
+                    const y = (pageHeight - imgHeight) / 2;
+                    
+                    pdf.addImage(imgData, 'PNG', 10, y, imgWidth, imgHeight);
+                    
+                    // Remover elemento temporário
                     document.body.removeChild(tempContainer);
+                    
+                    // Nome do arquivo
+                    const fileName = elements.nome.value ? 
+                        `Convite_${elements.nome.value.replace(/\s+/g, '_')}.pdf` : 
+                        'Convite_Discurso_Sacramental.pdf';
+                    
+                    // Salvar PDF
+                    pdf.save(fileName);
+                    console.log('PDF gerado e salvo com sucesso!');
+                    
+                } catch (error) {
+                    console.error('Erro ao gerar PDF:', error);
+                    alert('Erro ao gerar PDF: ' + error.message);
+                } finally {
+                    // Ocultar loading
+                    toggleLoading(false);
                 }
             }
 
