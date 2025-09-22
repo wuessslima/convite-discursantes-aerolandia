@@ -107,17 +107,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 600px;
+            min-height: 500px;
             background: #f0f0f0;
             border: 2px dashed #ccc;
             padding: 20px;
         }
         
         .pdf-preview {
-            width: 210mm; /* Largura A4 */
-            height: 297mm; /* Altura A4 */
+            width: 210mm; /* Largura A4 retrato */
+            height: 297mm; /* Altura A4 retrato */
             max-width: 100%;
-            max-height: 80vh;
+            max-height: 70vh;
             background: white;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             display: flex;
@@ -127,31 +127,34 @@
         }
         
         .pdf-content {
-            width: 100%;
-            max-width: 150mm; /* Metade da largura A4 */
+            width: 180mm; /* Conteúdo mais largo, estilo paisagem */
+            max-width: 90%;
             font-family: 'Playfair Display', serif;
             text-align: center;
             line-height: 1.8;
         }
         
         .pdf-title {
-            font-size: 24px;
+            font-size: 26px;
             color: var(--primary-color);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 10px;
+            padding-bottom: 12px;
         }
         
         .pdf-subtitle {
             font-size: 18px;
             color: var(--secondary-color);
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .pdf-text {
             font-size: 16px;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
             text-align: justify;
+            max-width: 160mm;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .pdf-highlight {
@@ -161,16 +164,21 @@
         
         .pdf-theme {
             font-size: 18px;
-            margin: 20px 0;
-            padding: 15px;
+            margin: 25px auto;
+            padding: 18px;
             background: #f8f9fa;
             border-left: 4px solid var(--accent-color);
+            max-width: 160mm;
+            text-align: center;
         }
         
         .pdf-signature {
-            margin-top: 30px;
+            margin-top: 35px;
             font-style: italic;
             color: #666;
+            max-width: 160mm;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .buttons {
@@ -226,6 +234,11 @@
             }
             
             .pdf-content {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .pdf-text, .pdf-theme, .pdf-signature {
                 max-width: 100%;
             }
         }
@@ -281,7 +294,7 @@
         <div class="preview-section">
             <h2 class="preview-title">👁️ Pré-visualização do PDF</h2>
             <p style="text-align: center; margin-bottom: 20px; color: #666;">
-                Esta é a visualização exata de como ficará o PDF gerado
+                Esta é a visualização exata de como ficará o PDF gerado (conteúdo largo centralizado)
             </p>
             
             <div class="pdf-container">
@@ -328,7 +341,7 @@
             return dataObj.toLocaleDateString('pt-BR', options);
         }
 
-        // Atualizar preview com estilo melhorado para PDF
+        // Atualizar preview com conteúdo em formato mais largo
         function atualizarPreview() {
             const dados = {
                 nome: elements.nome.value || '[NOME]',
@@ -344,7 +357,7 @@
                 <div class="pdf-subtitle">A Igreja de Jesus Cristo dos Santos dos Últimos Dias</div>
                 <div class="pdf-subtitle">Ala Aerolândia – Estaca Fortaleza Brasil</div>
                 
-                <div style="margin: 30px 0;"></div>
+                <div style="margin: 25px 0;"></div>
                 
                 <p class="pdf-text">
                     Prezado(a) irmão(ã) <span class="pdf-highlight">${dados.nome}</span>, 
@@ -365,7 +378,7 @@
                 
                 <div class="pdf-theme">
                     <strong>TEMA DO DISCURSO:</strong><br>
-                    "<span style="color: var(--accent-color);">${dados.tema}</span>"
+                    "<span style="color: var(--accent-color); font-size: 20px;">${dados.tema}</span>"
                 </div>
                 
                 <p class="pdf-text">
@@ -384,17 +397,17 @@
                     <p>Estaca Fortaleza Brasil</p>
                 </div>
                 
-                <p style="text-align: center; margin-top: 20px; font-size: 14px; color: #666;">
+                <p style="text-align: center; margin-top: 25px; font-size: 14px; color: #666; max-width: 160mm; margin-left: auto; margin-right: auto;">
                     Caso haja algum impedimento, solicitamos que nos avise com antecedência.
                 </p>
             `;
         }
 
-        // Gerar PDF centralizado na página A4
+        // Gerar PDF com conteúdo largo centralizado na página A4 retrato
         function gerarPDF() {
             const { jsPDF } = window.jspdf;
             
-            // Criar elemento temporário para o PDF (igual à pré-visualização)
+            // Criar elemento temporário para o PDF
             const tempContainer = document.createElement('div');
             tempContainer.style.width = '210mm';
             tempContainer.style.height = '297mm';
@@ -403,9 +416,13 @@
             tempContainer.style.alignItems = 'center';
             tempContainer.style.background = 'white';
             tempContainer.style.padding = '40px';
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-9999px'; // Esconder fora da tela
             
             const pdfContent = document.createElement('div');
             pdfContent.className = 'pdf-content';
+            pdfContent.style.width = '180mm'; // Largura do conteúdo (estilo paisagem)
+            pdfContent.style.maxWidth = '90%';
             pdfContent.innerHTML = elements.preview.innerHTML;
             tempContainer.appendChild(pdfContent);
             
@@ -422,12 +439,12 @@
             
             html2canvas(tempContainer, options).then(canvas => {
                 const imgData = canvas.toDataURL('image/png', 1.0);
-                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdf = new jsPDF('p', 'mm', 'a4'); // Retrato
                 const pageWidth = pdf.internal.pageSize.getWidth();
                 const pageHeight = pdf.internal.pageSize.getHeight();
                 
-                // Calcular posição para centralizar
-                const imgWidth = 150; // Largura do conteúdo (metade da A4)
+                // Calcular posição para centralizar o conteúdo largo
+                const imgWidth = 180; // Largura do conteúdo (estilo paisagem)
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 const x = (pageWidth - imgWidth) / 2;
                 const y = (pageHeight - imgHeight) / 2;
