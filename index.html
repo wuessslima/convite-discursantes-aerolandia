@@ -3,254 +3,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Convite para Discurso Sacramental</title>
+    <title>Gerador de Convite - Ala Aerolândia</title>
+    <meta name="description" content="Gerador de convites para discursos sacramentais da Ala Aerolândia">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-            color: #333;
+        :root {
+            --primary-color: #1a4f72;
+            --secondary-color: #2c6b9c;
+            --accent-color: #8B4513;
+            --background-color: #f8f9fa;
         }
         
-        h1 {
-            text-align: center;
-            color: #1a4f72;
-            margin-bottom: 30px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
         }
         
         .container {
-            display: flex;
-            flex-direction: column;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .subtitle {
+            color: var(--secondary-color);
+            font-size: 1.1em;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
         
-        .form-section, .preview-section {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #1a4f72;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
         }
         
         input, select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
             font-size: 16px;
-            box-sizing: border-box;
+            transition: border-color 0.3s;
         }
         
-        .preview {
-            border: 1px solid #ddd;
-            padding: 20px;
-            min-height: 400px;
-            background-color: white;
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+        
+        .preview-content {
+            border: 2px dashed #ddd;
+            padding: 30px;
+            min-height: 500px;
+            background: #fffef7;
             font-family: 'Times New Roman', serif;
-            line-height: 1.6;
+            line-height: 1.8;
         }
         
-        .preview h2 {
+        .pdf-version {
+            font-family: 'Playfair Display', serif;
             text-align: center;
-            color: #1a4f72;
-            margin-top: 0;
-        }
-        
-        .preview p {
-            margin-bottom: 15px;
+            background: white;
+            padding: 40px 30px;
+            border: 1px solid #e0e0e0;
         }
         
         .highlight {
             background-color: #fffacd;
-            padding: 2px 4px;
-            border-radius: 3px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: 'Playfair Display', serif;
         }
         
         .buttons {
             display: flex;
+            gap: 15px;
+            margin-top: 25px;
             justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
         }
         
-        button {
-            padding: 12px 24px;
-            background-color: #1a4f72;
-            color: white;
+        .btn {
+            padding: 14px 28px;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            border-radius: 6px;
             font-size: 16px;
-            transition: background-color 0.3s;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
         
-        button:hover {
-            background-color: #0d3a5c;
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
         }
         
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            .preview, .preview * {
-                visibility: visible;
-            }
-            .preview {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* Estilos específicos para a versão PDF */
+        .pdf-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        .pdf-subtitle {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .pdf-text {
+            font-family: 'Times New Roman', serif;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .pdf-highlight {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .pdf-theme {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .pdf-signature {
+            text-align: center;
+            margin-top: 30px;
+            font-style: italic;
+            color: #666;
         }
     </style>
 </head>
 <body>
-    <h1>Gerador de Convite para Discurso Sacramental</h1>
-    
     <div class="container">
-        <div class="form-section">
-            <h2>Preencha os Dados</h2>
-            <div class="form-group">
-                <label for="nome">Nome Completo:</label>
-                <input type="text" id="nome" placeholder="Ex: Ana Clara Gomes Ribeiro">
+        <header>
+            <h1>📄 Gerador de Convites</h1>
+            <p class="subtitle">Ala Aerolândia - Estaca Fortaleza Brasil</p>
+            <p>Crie convites para discursos sacramentais de forma rápida e profissional</p>
+        </header>
+        
+        <div class="content">
+            <div class="card">
+                <h2>📝 Preencha os Dados</h2>
+                <div class="form-group">
+                    <label for="nome">Nome Completo:</label>
+                    <input type="text" id="nome" placeholder="Ex: Ana Clara Gomes Ribeiro">
+                </div>
+                
+                <div class="form-group">
+                    <label for="chamado">Chamado:</label>
+                    <input type="text" id="chamado" placeholder="Ex: Secretária das Moças">
+                </div>
+                
+                <div class="form-group">
+                    <label for="data">Data do Discurso:</label>
+                    <input type="date" id="data">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tema">Tema do Discurso:</label>
+                    <input type="text" id="tema" placeholder="Ex: Aquele que Está Conosco">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ordem">Ordem do Discurso:</label>
+                    <select id="ordem">
+                        <option value="Primeiro(a)">Primeiro(a)</option>
+                        <option value="Segundo(a)">Segundo(a)</option>
+                        <option value="Terceiro(a)">Terceiro(a)</option>
+                    </select>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-secondary" id="limpar">Limpar</button>
+                    <button class="btn btn-primary" id="atualizar">Atualizar Visualização</button>
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="chamado">Chamado:</label>
-                <input type="text" id="chamado" placeholder="Ex: Secretária das Moças">
-            </div>
-            
-            <div class="form-group">
-                <label for="data">Data do Discurso:</label>
-                <input type="date" id="data">
-            </div>
-            
-            <div class="form-group">
-                <label for="tema">Tema do Discurso:</label>
-                <input type="text" id="tema" placeholder="Ex: Aquele que Está Conosco">
-            </div>
-            
-            <div class="form-group">
-                <label for="ordem">Ordem do Discurso:</label>
-                <select id="ordem">
-                    <option value="Primeiro(a)">Primeiro(a)</option>
-                    <option value="Segundo(a)">Segundo(a)</option>
-                    <option value="Terceiro(a)">Terceiro(a)</option>
-                </select>
+            <div class="card">
+                <h2>👁️ Pré-visualização (Versão PDF)</h2>
+                <div class="preview-content">
+                    <div id="convite-preview" class="pdf-version">
+                        <!-- Conteúdo será gerado automaticamente -->
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-primary" id="gerar-pdf">📥 Baixar PDF</button>
+                </div>
             </div>
         </div>
         
-        <div class="preview-section">
-            <h2>Pré-visualização do Convite</h2>
-            <div class="preview" id="convite-preview">
-                <!-- O conteúdo será preenchido automaticamente pelo JavaScript -->
-            </div>
-            
-            <div class="buttons">
-                <button id="atualizar">Atualizar Pré-visualização</button>
-                <button id="gerar-pdf">Gerar PDF</button>
-            </div>
-        </div>
+        <footer>
+            <p>© 2024 Ala Aerolândia - Estaca Fortaleza Brasil | Ferramenta desenvolvida para auxiliar a liderança</p>
+        </footer>
     </div>
 
     <script>
         // Elementos DOM
-        const nomeInput = document.getElementById('nome');
-        const chamadoInput = document.getElementById('chamado');
-        const dataInput = document.getElementById('data');
-        const temaInput = document.getElementById('tema');
-        const ordemSelect = document.getElementById('ordem');
-        const previewDiv = document.getElementById('convite-preview');
-        const atualizarBtn = document.getElementById('atualizar');
-        const gerarPdfBtn = document.getElementById('gerar-pdf');
-        
-        // Formatar data para o padrão brasileiro
+        const elements = {
+            nome: document.getElementById('nome'),
+            chamado: document.getElementById('chamado'),
+            data: document.getElementById('data'),
+            tema: document.getElementById('tema'),
+            ordem: document.getElementById('ordem'),
+            preview: document.getElementById('convite-preview'),
+            atualizar: document.getElementById('atualizar'),
+            gerarPdf: document.getElementById('gerar-pdf'),
+            limpar: document.getElementById('limpar')
+        };
+
+        // Formatar data para português
         function formatarData(data) {
-            if (!data) return '';
+            if (!data) return '[DATA]';
             
-            const dataObj = new Date(data);
+            const dataObj = new Date(data + 'T00:00:00');
             const options = { day: 'numeric', month: 'long', year: 'numeric' };
             return dataObj.toLocaleDateString('pt-BR', options);
         }
-        
-        // Atualizar pré-visualização
+
+        // Atualizar preview com estilo melhorado para PDF
         function atualizarPreview() {
-            const nome = nomeInput.value || '[NOME]';
-            const chamado = chamadoInput.value || '[CHAMADO]';
-            const data = formatarData(dataInput.value) || '[DATA]';
-            const tema = temaInput.value || '[TEMA DO DISCURSO]';
-            const ordem = ordemSelect.value;
-            
-            previewDiv.innerHTML = `
-                <h2>Convite para discursar na Reunião Sacramental</h2>
-                <p>De A Igreja de Jesus Cristo dos Santos dos Últimos Dias</p>
-                <p>Ala Aerolândia – Estaca Fortaleza Brasil</p>
-                <p>Querido(a) irmão(ã) <span class="highlight">${nome}</span> (<span class="highlight">${chamado}</span>). Você é convidado(a) à discursar como <span class="highlight">${ordem} Orador(a)</span> na Reunião Sacramental do dia <span class="highlight">${data}</span>.</p>
-                <p>Essa é uma grande oportunidade para o seu crescimento e para o crescimento dos membros de nossa ala. Você poderá usar uma escritura para lhe auxiliar.</p>
-                <p><strong>TEMA DE SEU DISCURSO:</strong> "<span class="highlight">${tema}</span>"</p>
-                <p>Desde já agradecemos sua participação e oramos para que o Senhor o(a) abençoe no cumprimento dessa designação. Caso surja algum impedimento, queira nos avisar antecipadamente.</p>
+            const dados = {
+                nome: elements.nome.value || '[NOME]',
+                chamado: elements.chamado.value || '[CHAMADO]',
+                data: formatarData(elements.data.value),
+                tema: elements.tema.value || '[TEMA DO DISCURSO]',
+                ordem: elements.ordem.value
+            };
+
+            elements.preview.innerHTML = `
+                <div class="pdf-title">Convite para Discursar na Reunião Sacramental</div>
+                
+                <div class="pdf-subtitle">A Igreja de Jesus Cristo dos Santos dos Últimos Dias</div>
+                <div class="pdf-subtitle">Ala Aerolândia – Estaca Fortaleza Brasil</div>
+                
+                <div style="margin: 30px 0;"></div>
+                
+                <p class="pdf-text">
+                    Prezado(a) irmão(ã) <span class="pdf-highlight">${dados.nome}</span>, 
+                    no digno chamado de <span class="pdf-highlight">${dados.chamado}</span>,
+                </p>
+                
+                <p class="pdf-text">
+                    Você está cordialmente convidado(a) para discursar como 
+                    <span class="pdf-highlight">${dados.ordem} Orador(a)</span> 
+                    na Reunião Sacramental do dia 
+                    <span class="pdf-highlight">${dados.data}</span>.
+                </p>
+                
+                <p class="pdf-text">
+                    Esta é uma valiosa oportunidade para edificar a fé e fortalecer 
+                    os membros de nossa ala através de seu testemunho e experiências.
+                </p>
+                
+                <div class="pdf-theme">
+                    <strong>TEMA DO DISCURSO:</strong><br>
+                    "<span style="color: var(--accent-color);">${dados.tema}</span>"
+                </div>
+                
+                <p class="pdf-text">
+                    Recomendamos o uso de escrituras sagradas para fundamentar sua mensagem 
+                    e inspirar os ouvintes.
+                </p>
+                
+                <p class="pdf-text">
+                    Agradecemos antecipadamente por aceitar esta designação e oramos para 
+                    que o Senhor o(a) abençoe ricamente em sua preparação e apresentação.
+                </p>
+                
+                <div class="pdf-signature">
+                    <p>Com estima,</p>
+                    <p><strong>Bispado da Ala Aerolândia</strong></p>
+                    <p>Estaca Fortaleza Brasil</p>
+                </div>
+                
+                <p class="pdf-text" style="text-align: center; margin-top: 20px; font-size: 14px; color: #666;">
+                    Caso haja algum impedimento, solicitamos que nos avise com antecedência.
+                </p>
             `;
         }
-        
-        // Gerar PDF
+
+        // Gerar PDF com qualidade melhorada
         function gerarPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
             
-            // Capturar o conteúdo da pré-visualização como imagem
-            html2canvas(previewDiv).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const imgWidth = doc.internal.pageSize.getWidth() - 20; // Margem de 10px em cada lado
-                const pageHeight = doc.internal.pageSize.getHeight();
+            // Configurações para melhor qualidade
+            const options = {
+                scale: 2, // Maior resolução
+                useCORS: true,
+                allowTaint: true,
+                logging: false
+            };
+            
+            html2canvas(elements.preview, options).then(canvas => {
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 190;
+                const pageHeight = 280;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 
                 let heightLeft = imgHeight;
                 let position = 10;
-                
-                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+
+                pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
                 heightLeft -= pageHeight;
-                
+
                 // Adicionar páginas se necessário
                 while (heightLeft >= 0) {
-                    position = heightLeft - imgHeight;
-                    doc.addPage();
-                    doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                    position = heightLeft - imgHeight + 10;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
                     heightLeft -= pageHeight;
                 }
+
+                // Nome do arquivo personalizado
+                const fileName = elements.nome.value ? 
+                    `Convite_${elements.nome.value.replace(/\s+/g, '_')}.pdf` : 
+                    'Convite_Discurso_Sacramental.pdf';
                 
-                doc.save('Convite_Discurso_Sacramental.pdf');
+                pdf.save(fileName);
             });
         }
-        
-        // Event Listeners
-        atualizarBtn.addEventListener('click', atualizarPreview);
-        gerarPdfBtn.addEventListener('click', gerarPDF);
-        
-        // Atualizar automaticamente quando os campos mudarem
-        nomeInput.addEventListener('input', atualizarPreview);
-        chamadoInput.addEventListener('input', atualizarPreview);
-        dataInput.addEventListener('change', atualizarPreview);
-        temaInput.addEventListener('input', atualizarPreview);
-        ordemSelect.addEventListener('change', atualizarPreview);
-        
-        // Inicializar pré-visualização
+
+        // Limpar formulário
+        function limparFormulario() {
+            elements.nome.value = '';
+            elements.chamado.value = '';
+            elements.tema.value = '';
+            elements.ordem.value = 'Primeiro(a)';
+            elements.data.value = '2025-09-21';
+            atualizarPreview();
+        }
+
+        // Event listeners
+        elements.atualizar.addEventListener('click', atualizarPreview);
+        elements.gerarPdf.addEventListener('click', gerarPDF);
+        elements.limpar.addEventListener('click', limparFormulario);
+
+        // Atualizar automaticamente
+        ['input', 'change'].forEach(event => {
+            elements.nome.addEventListener(event, atualizarPreview);
+            elements.chamado.addEventListener(event, atualizarPreview);
+            elements.data.addEventListener(event, atualizarPreview);
+            elements.tema.addEventListener(event, atualizarPreview);
+            elements.ordem.addEventListener(event, atualizarPreview);
+        });
+
+        // Inicializar
         window.addEventListener('load', () => {
-            // Definir data padrão para 21 de setembro de 2025
-            dataInput.value = '2025-09-21';
+            elements.data.value = '2025-09-21';
             atualizarPreview();
         });
     </script>
