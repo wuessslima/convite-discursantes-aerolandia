@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Convite para Discurso Sacramental</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1a4f72;
+            margin-bottom: 30px;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-section, .preview-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #1a4f72;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .preview {
+            border: 1px solid #ddd;
+            padding: 20px;
+            min-height: 400px;
+            background-color: white;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+        }
+        
+        .preview h2 {
+            text-align: center;
+            color: #1a4f72;
+            margin-top: 0;
+        }
+        
+        .preview p {
+            margin-bottom: 15px;
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background-color: #1a4f72;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0d3a5c;
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .preview, .preview * {
+                visibility: visible;
+            }
+            .preview {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Gerador de Convite para Discurso Sacramental</h1>
+    
+    <div class="container">
+        <div class="form-section">
+            <h2>Preencha os Dados</h2>
+            <div class="form-group">
+                <label for="nome">Nome Completo:</label>
+                <input type="text" id="nome" placeholder="Ex: Ana Clara Gomes Ribeiro">
+            </div>
+            
+            <div class="form-group">
+                <label for="chamado">Chamado:</label>
+                <input type="text" id="chamado" placeholder="Ex: Secretária das Moças">
+            </div>
+            
+            <div class="form-group">
+                <label for="data">Data do Discurso:</label>
+                <input type="date" id="data">
+            </div>
+            
+            <div class="form-group">
+                <label for="tema">Tema do Discurso:</label>
+                <input type="text" id="tema" placeholder="Ex: Aquele que Está Conosco">
+            </div>
+            
+            <div class="form-group">
+                <label for="ordem">Ordem do Discurso:</label>
+                <select id="ordem">
+                    <option value="Primeiro(a)">Primeiro(a)</option>
+                    <option value="Segundo(a)">Segundo(a)</option>
+                    <option value="Terceiro(a)">Terceiro(a)</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="preview-section">
+            <h2>Pré-visualização do Convite</h2>
+            <div class="preview" id="convite-preview">
+                <!-- O conteúdo será preenchido automaticamente pelo JavaScript -->
+            </div>
+            
+            <div class="buttons">
+                <button id="atualizar">Atualizar Pré-visualização</button>
+                <button id="gerar-pdf">Gerar PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos DOM
+        const nomeInput = document.getElementById('nome');
+        const chamadoInput = document.getElementById('chamado');
+        const dataInput = document.getElementById('data');
+        const temaInput = document.getElementById('tema');
+        const ordemSelect = document.getElementById('ordem');
+        const previewDiv = document.getElementById('convite-preview');
+        const atualizarBtn = document.getElementById('atualizar');
+        const gerarPdfBtn = document.getElementById('gerar-pdf');
+        
+        // Formatar data para o padrão brasileiro
+        function formatarData(data) {
+            if (!data) return '';
+            
+            const dataObj = new Date(data);
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return dataObj.toLocaleDateString('pt-BR', options);
+        }
+        
+        // Atualizar pré-visualização
+        function atualizarPreview() {
+            const nome = nomeInput.value || '[NOME]';
+            const chamado = chamadoInput.value || '[CHAMADO]';
+            const data = formatarData(dataInput.value) || '[DATA]';
+            const tema = temaInput.value || '[TEMA DO DISCURSO]';
+            const ordem = ordemSelect.value;
+            
+            previewDiv.innerHTML = `
+                <h2>Convite para discursar na Reunião Sacramental</h2>
+                <p>De A Igreja de Jesus Cristo dos Santos dos Últimos Dias</p>
+                <p>Ala Aerolândia – Estaca Fortaleza Brasil</p>
+                <p>Querido(a) irmão(ã) <span class="highlight">${nome}</span> (<span class="highlight">${chamado}</span>). Você é convidado(a) à discursar como <span class="highlight">${ordem} Orador(a)</span> na Reunião Sacramental do dia <span class="highlight">${data}</span>.</p>
+                <p>Essa é uma grande oportunidade para o seu crescimento e para o crescimento dos membros de nossa ala. Você poderá usar uma escritura para lhe auxiliar.</p>
+                <p><strong>TEMA DE SEU DISCURSO:</strong> "<span class="highlight">${tema}</span>"</p>
+                <p>Desde já agradecemos sua participação e oramos para que o Senhor o(a) abençoe no cumprimento dessa designação. Caso surja algum impedimento, queira nos avisar antecipadamente.</p>
+            `;
+        }
+        
+        // Gerar PDF
+        function gerarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Capturar o conteúdo da pré-visualização como imagem
+            html2canvas(previewDiv).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = doc.internal.pageSize.getWidth() - 20; // Margem de 10px em cada lado
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                let heightLeft = imgHeight;
+                let position = 10;
+                
+                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                
+                // Adicionar páginas se necessário
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    doc.addPage();
+                    doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                doc.save('Convite_Discurso_Sacramental.pdf');
+            });
+        }
+        
+        // Event Listeners
+        atualizarBtn.addEventListener('click', atualizarPreview);
+        gerarPdfBtn.addEventListener('click', gerarPDF);
+        
+        // Atualizar automaticamente quando os campos mudarem
+        nomeInput.addEventListener('input', atualizarPreview);
+        chamadoInput.addEventListener('input', atualizarPreview);
+        dataInput.addEventListener('change', atualizarPreview);
+        temaInput.addEventListener('input', atualizarPreview);
+        ordemSelect.addEventListener('change', atualizarPreview);
+        
+        // Inicializar pré-visualização
+        window.addEventListener('load', () => {
+            // Definir data padrão para 21 de setembro de 2025
+            dataInput.value = '2025-09-21';
+            atualizarPreview();
+        });
+    </script>
+</body>
+</html>
