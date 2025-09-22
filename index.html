@@ -28,6 +28,7 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden; /* Prevenir scroll lateral */
         }
         
         .container {
@@ -48,6 +49,7 @@
             color: var(--primary-color);
             margin-bottom: 10px;
             font-family: 'Playfair Display', serif;
+            font-size: 2rem;
         }
         
         .subtitle {
@@ -64,6 +66,11 @@
         @media (max-width: 1024px) {
             .content {
                 grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
             }
         }
         
@@ -72,6 +79,7 @@
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            height: fit-content;
         }
         
         .form-group {
@@ -104,6 +112,7 @@
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden; /* Prevenir overflow */
         }
         
         .preview-title {
@@ -116,78 +125,82 @@
         .pdf-container {
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 500px;
+            align-items: flex-start;
+            min-height: 400px;
             background: #f0f0f0;
             border: 2px dashed #ccc;
             padding: 20px;
+            overflow: hidden;
+            max-width: 100%;
         }
         
         .pdf-preview {
-            width: 297mm; /* Largura A4 paisagem */
-            height: 210mm; /* Altura A4 paisagem */
-            max-width: 100%;
-            max-height: 70vh;
+            width: 100%;
+            max-width: 600px; /* Tamanho reduzido para caber na tela */
+            height: 424px; /* Proporção A4 paisagem reduzida (600/1.414) */
             background: white;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 40px;
-            transform: scale(0.8);
+            padding: 30px;
+            transform: scale(0.95);
             transform-origin: center;
         }
         
         .pdf-content {
             width: 100%;
-            max-width: 250mm;
+            height: 100%;
             font-family: 'Playfair Display', serif;
             text-align: center;
-            line-height: 2.0;
-            padding: 30px;
+            line-height: 1.6;
+            padding: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         
         .pdf-title {
-            font-size: 32px;
+            font-size: 20px;
             color: var(--primary-color);
-            margin-bottom: 30px;
-            border-bottom: 3px solid var(--accent-color);
-            padding-bottom: 15px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
         }
         
         .pdf-subtitle {
-            font-size: 20px;
+            font-size: 16px;
             color: var(--secondary-color);
-            margin-bottom: 25px;
+            margin-bottom: 12px;
         }
         
         .pdf-text {
-            font-size: 18px;
-            margin-bottom: 20px;
+            font-size: 14px;
+            margin-bottom: 10px;
             text-align: center;
-            line-height: 1.8;
+            line-height: 1.5;
         }
         
         .pdf-highlight {
             font-weight: bold;
             color: var(--primary-color);
-            font-size: 19px;
         }
         
         .pdf-theme {
-            font-size: 22px;
-            margin: 30px 0;
-            padding: 20px;
+            font-size: 16px;
+            margin: 15px 0;
+            padding: 12px;
             background: #f8f9fa;
-            border: 2px solid var(--accent-color);
-            border-radius: 8px;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
         }
         
         .pdf-signature {
-            margin-top: 40px;
+            margin-top: 20px;
             font-style: italic;
             color: #666;
-            font-size: 18px;
+            font-size: 14px;
         }
         
         .buttons {
@@ -195,16 +208,18 @@
             gap: 15px;
             justify-content: center;
             margin-top: 25px;
+            flex-wrap: wrap;
         }
         
         .btn {
-            padding: 14px 28px;
+            padding: 12px 24px;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            min-width: 140px;
         }
         
         .btn-primary {
@@ -236,24 +251,54 @@
         }
         
         @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
             .pdf-preview {
-                width: 100%;
-                height: auto;
-                padding: 20px;
+                max-width: 100%;
+                height: 300px;
+                padding: 15px;
                 transform: scale(1);
             }
             
-            .pdf-content {
-                max-width: 100%;
-                padding: 20px;
-            }
-            
             .pdf-title {
-                font-size: 24px;
+                font-size: 18px;
             }
             
             .pdf-text, .pdf-theme {
+                font-size: 12px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .pdf-preview {
+                height: 250px;
+                padding: 10px;
+            }
+            
+            .pdf-content {
+                padding: 10px;
+            }
+            
+            .pdf-title {
                 font-size: 16px;
+                margin-bottom: 10px;
+            }
+            
+            .pdf-text {
+                font-size: 11px;
+                margin-bottom: 8px;
             }
         }
     </style>
@@ -308,16 +353,16 @@
             <!-- Seção de Pré-visualização do PDF -->
             <div class="preview-section">
                 <h2 class="preview-title">👁️ Pré-visualização do PDF (Paisagem)</h2>
-                <p style="text-align: center; margin-bottom: 20px; color: #666;">
-                    Visualização em formato A4 paisagem
+                <p style="text-align: center; margin-bottom: 15px; color: #666; font-size: 14px;">
+                    Visualização reduzida - O PDF final será em tamanho A4 paisagem completo
                 </p>
                 
                 <div class="pdf-container">
                     <div class="pdf-preview">
                         <div id="convite-preview" class="pdf-content">
-                            <div style="color: #999; text-align: center;">
-                                <p>Preencha os dados ao lado e clique em "Atualizar Visualização"</p>
-                                <p>para ver o convite formatado aqui</p>
+                            <div style="color: #999; text-align: center; font-size: 12px;">
+                                <p>Preencha os dados ao lado e clique em</p>
+                                <p>"Atualizar Visualização" para ver o convite</p>
                             </div>
                         </div>
                     </div>
@@ -357,7 +402,7 @@
             return dataObj.toLocaleDateString('pt-BR', options);
         }
 
-        // Atualizar preview em formato paisagem
+        // Atualizar preview em formato reduzido
         function atualizarPreview() {
             const dados = {
                 nome: elements.nome.value || '[NOME]',
@@ -373,7 +418,7 @@
                 <div class="pdf-subtitle">A Igreja de Jesus Cristo dos Santos dos Últimos Dias</div>
                 <div class="pdf-subtitle">Ala Aerolândia – Estaca Fortaleza Brasil</div>
                 
-                <div style="margin: 30px 0;"></div>
+                <div style="margin: 10px 0;"></div>
                 
                 <p class="pdf-text">
                     Prezado(a) irmão(ã) <span class="pdf-highlight">${dados.nome}</span>, 
@@ -381,33 +426,122 @@
                 </p>
                 
                 <p class="pdf-text">
-                    Você está cordialmente convidado(a) para discursar como 
+                    Você está convidado(a) para discursar como 
                     <span class="pdf-highlight">${dados.ordem} Orador(a)</span> 
                     na Reunião Sacramental do dia 
                     <span class="pdf-highlight">${dados.data}</span>.
                 </p>
                 
                 <p class="pdf-text">
-                    Esta é uma valiosa oportunidade para edificar a fé e fortalecer 
-                    os membros de nossa ala através de seu testemunho e experiências.
+                    Esta é uma oportunidade para edificar a fé e fortalecer 
+                    os membros de nossa ala.
                 </p>
                 
                 <div class="pdf-theme">
                     <strong>TEMA DO DISCURSO:</strong><br>
-                    "<span style="color: var(--accent-color); font-size: 24px;">${dados.tema}</span>"
+                    "<span style="color: var(--accent-color);">${dados.tema}</span>"
                 </div>
                 
                 <p class="pdf-text">
+                    Recomendamos o uso de escrituras sagradas para fundamentar sua mensagem.
+                </p>
+                
+                <p class="pdf-text">
+                    Agradecemos por aceitar esta designação.
+                </p>
+                
+                <div class="pdf-signature">
+                    <p>Com estima,</p>
+                    <p><strong>Bispado da Ala Aerolândia</strong></p>
+                </div>
+                
+                <p style="text-align: center; margin-top: 10px; font-size: 11px; color: #666;">
+                    Caso haja impedimento, avise com antecedência.
+                </p>
+            `;
+        }
+
+        // Gerar PDF em paisagem (tamanho real A4)
+        function gerarPDF() {
+            const { jsPDF } = window.jspdf;
+            
+            // Criar elemento temporário para o PDF em tamanho real
+            const tempContainer = document.createElement('div');
+            tempContainer.style.width = '297mm'; // Largura A4 paisagem
+            tempContainer.style.height = '210mm'; // Altura A4 paisagem
+            tempContainer.style.display = 'flex';
+            tempContainer.style.justifyContent = 'center';
+            tempContainer.style.alignItems: 'center';
+            tempContainer.style.background = 'white';
+            tempContainer.style.padding = '40px';
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-9999px';
+            
+            const pdfContent = document.createElement('div');
+            pdfContent.style.width = '100%';
+            pdfContent.style.height = '100%';
+            pdfContent.style.fontFamily = "'Playfair Display', serif";
+            pdfContent.style.textAlign = 'center';
+            pdfContent.style.lineHeight = '2.0';
+            pdfContent.style.padding = '50px';
+            pdfContent.style.display = 'flex';
+            pdfContent.style.flexDirection = 'column';
+            pdfContent.style.justifyContent = 'center';
+            
+            // Conteúdo em tamanho real para o PDF
+            const dados = {
+                nome: elements.nome.value || '[NOME]',
+                chamado: elements.chamado.value || '[CHAMADO]',
+                data: formatarData(elements.data.value),
+                tema: elements.tema.value || '[TEMA DO DISCURSO]',
+                ordem: elements.ordem.value
+            };
+
+            pdfContent.innerHTML = `
+                <div style="font-size: 32px; color: #1a4f72; margin-bottom: 30px; border-bottom: 3px solid #8B4513; padding-bottom: 15px;">
+                    Convite para Discursar na Reunião Sacramental
+                </div>
+                
+                <div style="font-size: 20px; color: #2c6b9c; margin-bottom: 25px;">
+                    A Igreja de Jesus Cristo dos Santos dos Últimos Dias
+                </div>
+                <div style="font-size: 20px; color: #2c6b9c; margin-bottom: 40px;">
+                    Ala Aerolândia – Estaca Fortaleza Brasil
+                </div>
+                
+                <p style="font-size: 18px; margin-bottom: 20px; text-align: center; line-height: 1.8;">
+                    Prezado(a) irmão(ã) <strong style="color: #1a4f72;">${dados.nome}</strong>, 
+                    no digno chamado de <strong style="color: #1a4f72;">${dados.chamado}</strong>,
+                </p>
+                
+                <p style="font-size: 18px; margin-bottom: 20px; text-align: center; line-height: 1.8;">
+                    Você está cordialmente convidado(a) para discursar como 
+                    <strong style="color: #1a4f72;">${dados.ordem} Orador(a)</strong> 
+                    na Reunião Sacramental do dia 
+                    <strong style="color: #1a4f72;">${dados.data}</strong>.
+                </p>
+                
+                <p style="font-size: 18px; margin-bottom: 20px; text-align: center; line-height: 1.8;">
+                    Esta é uma valiosa oportunidade para edificar a fé e fortalecer 
+                    os membros de nossa ala através de seu testemunho e experiências.
+                </p>
+                
+                <div style="font-size: 22px; margin: 30px 0; padding: 20px; background: #f8f9fa; border: 2px solid #8B4513; border-radius: 8px;">
+                    <strong>TEMA DO DISCURSO:</strong><br>
+                    "<span style="color: #8B4513; font-size: 24px;">${dados.tema}</span>"
+                </div>
+                
+                <p style="font-size: 18px; margin-bottom: 20px; text-align: center; line-height: 1.8;">
                     Recomendamos o uso de escrituras sagradas para fundamentar sua mensagem 
                     e inspirar os ouvintes.
                 </p>
                 
-                <p class="pdf-text">
+                <p style="font-size: 18px; margin-bottom: 20px; text-align: center; line-height: 1.8;">
                     Agradecemos antecipadamente por aceitar esta designação e oramos para 
                     que o Senhor o(a) abençoe ricamente em sua preparação e apresentação.
                 </p>
                 
-                <div class="pdf-signature">
+                <div style="margin-top: 40px; font-style: italic; color: #666; font-size: 18px;">
                     <p>Com estima,</p>
                     <p><strong>Bispado da Ala Aerolândia</strong></p>
                     <p>Estaca Fortaleza Brasil</p>
@@ -417,60 +551,31 @@
                     Caso haja algum impedimento, solicitamos que nos avise com antecedência.
                 </p>
             `;
-        }
-
-        // Gerar PDF em paisagem
-        function gerarPDF() {
-            const { jsPDF } = window.jspdf;
             
-            // Criar elemento temporário para o PDF em paisagem
-            const tempContainer = document.createElement('div');
-            tempContainer.style.width = '297mm'; // Largura A4 paisagem
-            tempContainer.style.height = '210mm'; // Altura A4 paisagem
-            tempContainer.style.display = 'flex';
-            tempContainer.style.justifyContent = 'center';
-            tempContainer.style.alignItems = 'center';
-            tempContainer.style.background = 'white';
-            tempContainer.style.padding = '40px';
-            tempContainer.style.position = 'absolute';
-            tempContainer.style.left = '-9999px'; // Esconder fora da tela
-            
-            const pdfContent = document.createElement('div');
-            pdfContent.className = 'pdf-content';
-            pdfContent.style.width = '100%';
-            pdfContent.style.maxWidth = '250mm';
-            pdfContent.innerHTML = elements.preview.innerHTML;
             tempContainer.appendChild(pdfContent);
-            
             document.body.appendChild(tempContainer);
             
-            // Configurações para melhor qualidade
-            const options = {
+            // Gerar PDF
+            html2canvas(tempContainer, {
                 scale: 2,
                 useCORS: true,
                 logging: false,
                 width: tempContainer.offsetWidth,
                 height: tempContainer.offsetHeight
-            };
-            
-            html2canvas(tempContainer, options).then(canvas => {
+            }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png', 1.0);
-                const pdf = new jsPDF('l', 'mm', 'a4'); // Paisagem
+                const pdf = new jsPDF('l', 'mm', 'a4');
                 const pageWidth = pdf.internal.pageSize.getWidth();
                 const pageHeight = pdf.internal.pageSize.getHeight();
                 
-                // Ajustar imagem para caber na página paisagem
-                const imgWidth = pageWidth - 40; // Margens de 20mm cada lado
+                const imgWidth = pageWidth - 40;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                const x = 20; // Margem esquerda
-                const y = (pageHeight - imgHeight) / 2; // Centralizar verticalmente
+                const x = 20;
+                const y = (pageHeight - imgHeight) / 2;
                 
                 pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
-                
-                // Remover elemento temporário
                 document.body.removeChild(tempContainer);
                 
-                // Nome do arquivo personalizado
                 const fileName = elements.nome.value ? 
                     `Convite_${elements.nome.value.replace(/\s+/g, '_')}.pdf` : 
                     'Convite_Discurso_Sacramental.pdf';
