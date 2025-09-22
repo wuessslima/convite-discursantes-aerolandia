@@ -31,7 +31,7 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
         }
         
@@ -55,12 +55,23 @@
             font-size: 1.1em;
         }
         
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
         .form-section {
             background: white;
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
         }
         
         .form-group {
@@ -93,7 +104,6 @@
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
         }
         
         .preview-title {
@@ -114,8 +124,8 @@
         }
         
         .pdf-preview {
-            width: 210mm; /* Largura A4 retrato */
-            height: 297mm; /* Altura A4 retrato */
+            width: 297mm; /* Largura A4 paisagem */
+            height: 210mm; /* Altura A4 paisagem */
             max-width: 100%;
             max-height: 70vh;
             background: white;
@@ -124,61 +134,60 @@
             justify-content: center;
             align-items: center;
             padding: 40px;
+            transform: scale(0.8);
+            transform-origin: center;
         }
         
         .pdf-content {
-            width: 180mm; /* Conteúdo mais largo, estilo paisagem */
-            max-width: 90%;
+            width: 100%;
+            max-width: 250mm;
             font-family: 'Playfair Display', serif;
             text-align: center;
-            line-height: 1.8;
+            line-height: 2.0;
+            padding: 30px;
         }
         
         .pdf-title {
-            font-size: 26px;
+            font-size: 32px;
             color: var(--primary-color);
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 12px;
+            margin-bottom: 30px;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 15px;
         }
         
         .pdf-subtitle {
-            font-size: 18px;
+            font-size: 20px;
             color: var(--secondary-color);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .pdf-text {
-            font-size: 16px;
-            margin-bottom: 16px;
-            text-align: justify;
-            max-width: 160mm;
-            margin-left: auto;
-            margin-right: auto;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.8;
         }
         
         .pdf-highlight {
             font-weight: bold;
             color: var(--primary-color);
+            font-size: 19px;
         }
         
         .pdf-theme {
-            font-size: 18px;
-            margin: 25px auto;
-            padding: 18px;
+            font-size: 22px;
+            margin: 30px 0;
+            padding: 20px;
             background: #f8f9fa;
-            border-left: 4px solid var(--accent-color);
-            max-width: 160mm;
-            text-align: center;
+            border: 2px solid var(--accent-color);
+            border-radius: 8px;
         }
         
         .pdf-signature {
-            margin-top: 35px;
+            margin-top: 40px;
             font-style: italic;
             color: #666;
-            max-width: 160mm;
-            margin-left: auto;
-            margin-right: auto;
+            font-size: 18px;
         }
         
         .buttons {
@@ -231,15 +240,20 @@
                 width: 100%;
                 height: auto;
                 padding: 20px;
+                transform: scale(1);
             }
             
             .pdf-content {
-                width: 100%;
                 max-width: 100%;
+                padding: 20px;
             }
             
-            .pdf-text, .pdf-theme, .pdf-signature {
-                max-width: 100%;
+            .pdf-title {
+                font-size: 24px;
+            }
+            
+            .pdf-text, .pdf-theme {
+                font-size: 16px;
             }
         }
     </style>
@@ -252,64 +266,66 @@
             <p>Crie convites para discursos sacramentais de forma rápida e profissional</p>
         </header>
         
-        <!-- Seção do Formulário -->
-        <div class="form-section">
-            <h2>📝 Preencha os Dados</h2>
-            <div class="form-group">
-                <label for="nome">Nome Completo:</label>
-                <input type="text" id="nome" placeholder="Ex: Ana Clara Gomes Ribeiro">
-            </div>
-            
-            <div class="form-group">
-                <label for="chamado">Chamado:</label>
-                <input type="text" id="chamado" placeholder="Ex: Secretária das Moças">
-            </div>
-            
-            <div class="form-group">
-                <label for="data">Data do Discurso:</label>
-                <input type="date" id="data">
-            </div>
-            
-            <div class="form-group">
-                <label for="tema">Tema do Discurso:</label>
-                <input type="text" id="tema" placeholder="Ex: Aquele que Está Conosco">
-            </div>
-            
-            <div class="form-group">
-                <label for="ordem">Ordem do Discurso:</label>
-                <select id="ordem">
-                    <option value="Primeiro(a)">Primeiro(a)</option>
-                    <option value="Segundo(a)">Segundo(a)</option>
-                    <option value="Terceiro(a)">Terceiro(a)</option>
-                </select>
-            </div>
-            
-            <div class="buttons">
-                <button class="btn btn-secondary" id="limpar">Limpar</button>
-                <button class="btn btn-primary" id="atualizar">Atualizar Visualização</button>
-            </div>
-        </div>
-        
-        <!-- Seção de Pré-visualização do PDF -->
-        <div class="preview-section">
-            <h2 class="preview-title">👁️ Pré-visualização do PDF</h2>
-            <p style="text-align: center; margin-bottom: 20px; color: #666;">
-                Esta é a visualização exata de como ficará o PDF gerado (conteúdo largo centralizado)
-            </p>
-            
-            <div class="pdf-container">
-                <div class="pdf-preview">
-                    <div id="convite-preview" class="pdf-content">
-                        <div style="color: #999; text-align: center;">
-                            <p>Preencha os dados acima e clique em "Atualizar Visualização"</p>
-                            <p>para ver o convite formatado aqui</p>
-                        </div>
-                    </div>
+        <div class="content">
+            <!-- Seção do Formulário -->
+            <div class="form-section">
+                <h2>📝 Preencha os Dados</h2>
+                <div class="form-group">
+                    <label for="nome">Nome Completo:</label>
+                    <input type="text" id="nome" placeholder="Ex: Ana Clara Gomes Ribeiro">
+                </div>
+                
+                <div class="form-group">
+                    <label for="chamado">Chamado:</label>
+                    <input type="text" id="chamado" placeholder="Ex: Secretária das Moças">
+                </div>
+                
+                <div class="form-group">
+                    <label for="data">Data do Discurso:</label>
+                    <input type="date" id="data">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tema">Tema do Discurso:</label>
+                    <input type="text" id="tema" placeholder="Ex: Aquele que Está Conosco">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ordem">Ordem do Discurso:</label>
+                    <select id="ordem">
+                        <option value="Primeiro(a)">Primeiro(a)</option>
+                        <option value="Segundo(a)">Segundo(a)</option>
+                        <option value="Terceiro(a)">Terceiro(a)</option>
+                    </select>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-secondary" id="limpar">Limpar</button>
+                    <button class="btn btn-primary" id="atualizar">Atualizar Visualização</button>
                 </div>
             </div>
             
-            <div class="buttons">
-                <button class="btn btn-primary" id="gerar-pdf">📥 Baixar PDF</button>
+            <!-- Seção de Pré-visualização do PDF -->
+            <div class="preview-section">
+                <h2 class="preview-title">👁️ Pré-visualização do PDF (Paisagem)</h2>
+                <p style="text-align: center; margin-bottom: 20px; color: #666;">
+                    Visualização em formato A4 paisagem
+                </p>
+                
+                <div class="pdf-container">
+                    <div class="pdf-preview">
+                        <div id="convite-preview" class="pdf-content">
+                            <div style="color: #999; text-align: center;">
+                                <p>Preencha os dados ao lado e clique em "Atualizar Visualização"</p>
+                                <p>para ver o convite formatado aqui</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-primary" id="gerar-pdf">📥 Baixar PDF em Paisagem</button>
+                </div>
             </div>
         </div>
         
@@ -341,7 +357,7 @@
             return dataObj.toLocaleDateString('pt-BR', options);
         }
 
-        // Atualizar preview com conteúdo em formato mais largo
+        // Atualizar preview em formato paisagem
         function atualizarPreview() {
             const dados = {
                 nome: elements.nome.value || '[NOME]',
@@ -357,7 +373,7 @@
                 <div class="pdf-subtitle">A Igreja de Jesus Cristo dos Santos dos Últimos Dias</div>
                 <div class="pdf-subtitle">Ala Aerolândia – Estaca Fortaleza Brasil</div>
                 
-                <div style="margin: 25px 0;"></div>
+                <div style="margin: 30px 0;"></div>
                 
                 <p class="pdf-text">
                     Prezado(a) irmão(ã) <span class="pdf-highlight">${dados.nome}</span>, 
@@ -378,7 +394,7 @@
                 
                 <div class="pdf-theme">
                     <strong>TEMA DO DISCURSO:</strong><br>
-                    "<span style="color: var(--accent-color); font-size: 20px;">${dados.tema}</span>"
+                    "<span style="color: var(--accent-color); font-size: 24px;">${dados.tema}</span>"
                 </div>
                 
                 <p class="pdf-text">
@@ -397,20 +413,20 @@
                     <p>Estaca Fortaleza Brasil</p>
                 </div>
                 
-                <p style="text-align: center; margin-top: 25px; font-size: 14px; color: #666; max-width: 160mm; margin-left: auto; margin-right: auto;">
+                <p style="text-align: center; margin-top: 30px; font-size: 16px; color: #666;">
                     Caso haja algum impedimento, solicitamos que nos avise com antecedência.
                 </p>
             `;
         }
 
-        // Gerar PDF com conteúdo largo centralizado na página A4 retrato
+        // Gerar PDF em paisagem
         function gerarPDF() {
             const { jsPDF } = window.jspdf;
             
-            // Criar elemento temporário para o PDF
+            // Criar elemento temporário para o PDF em paisagem
             const tempContainer = document.createElement('div');
-            tempContainer.style.width = '210mm';
-            tempContainer.style.height = '297mm';
+            tempContainer.style.width = '297mm'; // Largura A4 paisagem
+            tempContainer.style.height = '210mm'; // Altura A4 paisagem
             tempContainer.style.display = 'flex';
             tempContainer.style.justifyContent = 'center';
             tempContainer.style.alignItems = 'center';
@@ -421,8 +437,8 @@
             
             const pdfContent = document.createElement('div');
             pdfContent.className = 'pdf-content';
-            pdfContent.style.width = '180mm'; // Largura do conteúdo (estilo paisagem)
-            pdfContent.style.maxWidth = '90%';
+            pdfContent.style.width = '100%';
+            pdfContent.style.maxWidth = '250mm';
             pdfContent.innerHTML = elements.preview.innerHTML;
             tempContainer.appendChild(pdfContent);
             
@@ -439,15 +455,15 @@
             
             html2canvas(tempContainer, options).then(canvas => {
                 const imgData = canvas.toDataURL('image/png', 1.0);
-                const pdf = new jsPDF('p', 'mm', 'a4'); // Retrato
+                const pdf = new jsPDF('l', 'mm', 'a4'); // Paisagem
                 const pageWidth = pdf.internal.pageSize.getWidth();
                 const pageHeight = pdf.internal.pageSize.getHeight();
                 
-                // Calcular posição para centralizar o conteúdo largo
-                const imgWidth = 180; // Largura do conteúdo (estilo paisagem)
+                // Ajustar imagem para caber na página paisagem
+                const imgWidth = pageWidth - 40; // Margens de 20mm cada lado
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                const x = (pageWidth - imgWidth) / 2;
-                const y = (pageHeight - imgHeight) / 2;
+                const x = 20; // Margem esquerda
+                const y = (pageHeight - imgHeight) / 2; // Centralizar verticalmente
                 
                 pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
                 
